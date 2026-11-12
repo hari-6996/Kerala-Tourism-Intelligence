@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% set active_page = 'comparison' %}
+
+{% block content %}
+<div class="page-header">
+    <span class="page-eyebrow">Side-by-Side Benchmarking</span>
+    <h1 class="page-title">Destination Comparison</h1>
+    <p class="page-lead">
+        Compare infrastructure supply, tourist attractions, airport proximity, and 2022–2024 footfall across any two Kerala destinations.
+    </p>
+</div>
+
+<!-- SELECTOR FORM -->
+<div class="filter-bar">
+    <form method="GET" action="/comparison" class="filter-grid-3">
+        <div>
+            <label class="form-label" for="dest1-select">Primary Destination (A)</label>
+            <select id="dest1-select" name="dest1" class="form-select">
+                {% for d in destinations %}
+                <option value="{{ d.Destination }}" {% if d.Destination == dest1.Destination %}selected{% endif %}>{{ d.Destination }} ({{ d.District }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="form-label" for="dest2-select">Comparison Destination (B)</label>
+            <select id="dest2-select" name="dest2" class="form-select">
+                {% for d in destinations %}
+                <option value="{{ d.Destination }}" {% if d.Destination == dest2.Destination %}selected{% endif %}>{{ d.Destination }} ({{ d.District }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="btn-primary" style="height:40px; width:100%;">Compare Hubs</button>
+        </div>
+    </form>
+</div>
+
+<!-- SIDE-BY-SIDE VISUAL CARDS -->
+<div class="grid-2" style="margin-bottom:1.5rem;">
+    <article class="media-card">
+        <div class="media-card-img-wrap" style="height:175px;">
+            <img src="{{ dest1.Photo_URL }}" alt="{{ dest1.Destination }}" />
+            <div class="spotlight-overlay">
+                <h2 class="spotlight-title" style="font-size:1.5rem;">{{ dest1.Destination }}</h2>
+                <p class="spotlight-loc">{{ dest1.District }} District &middot; {{ dest1.Landscape_Category }}</p>
+            </div>
+        </div>
+        <div class="media-card-body">
+            <span class="spotlight-cluster-pill">Cluster {{ dest1.Cluster }} &middot; {{ dest1.Cluster_Name }}</span>
+            <div style="font-size:0.83rem; color:var(--ink-2); line-height:1.65;">
+                <div><strong style="color:var(--ink);">Opportunity Category:</strong> {{ dest1.Opportunity_Category }}</div>
+                <div><strong style="color:var(--ink);">Suggested Venture:</strong> {{ dest1.Recommended_Business }}</div>
+                <div class="tabular"><strong style="color:var(--ink);">Infrastructure Gap:</strong> {{ "%+.1f"|format(dest1.Overall_Gap_Score) }}</div>
+            </div>
+        </div>
+    </article>
+
+    <article class="media-card">
+        <div class="media-card-img-wrap" style="height:175px;">
+            <img src="{{ dest2.Photo_URL }}" alt="{{ dest2.Destination }}" />
+            <div class="spotlight-overlay">
+                <h2 class="spotlight-title" style="font-size:1.5rem;">{{ dest2.Destination }}</h2>
+                <p class="spotlight-loc">{{ dest2.District }} District &middot; {{ dest2.Landscape_Category }}</p>
+            </div>
+        </div>
+        <div class="media-card-body">
+            <span class="spotlight-cluster-pill">Cluster {{ dest2.Cluster }} &middot; {{ dest2.Cluster_Name }}</span>
+            <div style="font-size:0.83rem; color:var(--ink-2); line-height:1.65;">
+                <div><strong style="color:var(--ink);">Opportunity Category:</strong> {{ dest2.Opportunity_Category }}</div>
+                <div><strong style="color:var(--ink);">Suggested Venture:</strong> {{ dest2.Recommended_Business }}</div>
+                <div class="tabular"><strong style="color:var(--ink);">Infrastructure Gap:</strong> {{ "%+.1f"|format(dest2.Overall_Gap_Score) }}</div>
+            </div>
+        </div>
+    </article>
+</div>
+
+<!-- GROUPED INTERACTIVE BAR CHART -->
+<div class="panel" style="margin-bottom:1.5rem;">
+    <div class="panel-header">
+        <h3 class="panel-title">Hospitality &amp; Attraction Count: {{ dest1.Destination }} vs. {{ dest2.Destination }}</h3>
+        <span class="panel-meta">Recorded establishments</span>
+    </div>
+    <div class="chart-stage-tall">
+        <canvas id="comparisonChart"></canvas>
+    </div>
+</div>
+
+<!-- DETAILED COMPARATIVE TABLE -->
+<div class="table-container" style="margin-bottom:1.5rem;">
+    <div class="table-container-header">
+        <h3 class="panel-title">Side-by-Side Metrics &amp; Variance</h3>
+        <span class="panel-meta">Difference shown as (A &minus; B)</span>
+    </div>
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th class="num">{{ dest1.Destination }}</th>
+                    <th class="num">{{ dest2.Destination }}</th>
+                    <th class="num">Difference (A &minus; B)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Cluster Segment</strong></td>
+                    <td class="num" style="text-align:right; color:var(--ink-2);">{{ dest1.Cluster_Name }}</td>
+                    <td class="num" style="text-align:right; color:var(--ink-2);">{{ dest2.Cluster_Name }}</td>
+                    <td class="num">&mdash;</td>
+                </tr>
+                <tr>
+                    <td><strong>2024 Footfall</strong></td>
+                    <td class="num"><strong>{{ "{:,}".format(dest1.Total_Visitors_2024) }}</strong></td>
+                    <td class="num"><strong>{{ "{:,}".format(dest2.Total_Visitors_2024) }}</strong></td>
+                    <td class="num"><strong>{{ "{:+,}".format((dest1.Total_Visitors_2024 - dest2.Total_Visitors_2024) | int) }}</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>3-Year Growth</strong></td>
+                    <td class="num">{{ "%+.1f"|format(dest1.Growth_2022_2024) }}%</td>
+                    <td class="num">{{ "%+.1f"|format(dest2.Growth_2022_2024) }}%</td>
+                    <td class="num">{{ "%+.1f"|format(dest1.Growth_2022_2024 - dest2.Growth_2022_2024) }}%</td>
+                </tr>
+                <tr>
+                    <td><strong>Hotels</strong></td>
+                    <td class="num">{{ dest1.Hotels | int }}</td>
+                    <td class="num">{{ dest2.Hotels | int }}</td>
+                    <td class="num">{{ "%+d"|format((dest1.Hotels - dest2.Hotels) | int) }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Resorts</strong></td>
+                    <td class="num">{{ dest1.Resorts | int }}</td>
+                    <td class="num">{{ dest2.Resorts | int }}</td>
+                    <td class="num">{{ "%+d"|format((dest1.Resorts - dest2.Resorts) | int) }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Homestays</strong></td>
+                    <td class="num">{{ dest1.Homestays_Vacation_Rentals | int }}</td>
+                    <td class="num">{{ dest2.Homestays_Vacation_Rentals | int }}</td>
+                    <td class="num">{{ "%+d"|format((dest1.Homestays_Vacation_Rentals - dest2.Homestays_Vacation_Rentals) | int) }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Restaurants</strong></td>
+                    <td class="num">{{ dest1.Restaurants | int }}</td>
+                    <td class="num">{{ dest2.Restaurants | int }}</td>
+                    <td class="num">{{ "%+d"|format((dest1.Restaurants - dest2.Restaurants) | int) }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Tourist Attractions</strong></td>
+                    <td class="num">{{ dest1.Attraction_Count | int }}</td>
+                    <td class="num">{{ dest2.Attraction_Count | int }}</td>
+                    <td class="num">{{ "%+d"|format((dest1.Attraction_Count - dest2.Attraction_Count) | int) }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Airport Distance</strong></td>
+                    <td class="num">{{ dest1.Nearest_Airport_Distance_km_numeric | round(0) | int }} km</td>
+                    <td class="num">{{ dest2.Nearest_Airport_Distance_km_numeric | round(0) | int }} km</td>
+                    <td class="num">{{ "%+d"|format((dest1.Nearest_Airport_Distance_km_numeric - dest2.Nearest_Airport_Distance_km_numeric) | round(0) | int) }} km</td>
+                </tr>
+                <tr>
+                    <td><strong>Overall Gap Score</strong></td>
+                    <td class="num">{{ "%+.1f"|format(dest1.Overall_Gap_Score) }}</td>
+                    <td class="num">{{ "%+.1f"|format(dest2.Overall_Gap_Score) }}</td>
+                    <td class="num">{{ "%+.1f"|format(dest1.Overall_Gap_Score - dest2.Overall_Gap_Score) }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- AUTOMATED INSIGHTS SYNTHESIS -->
+<div class="transit-box" style="padding:16px 20px;">
+    <h4 style="color:var(--forest); font-size:0.95rem; font-weight:700; margin-bottom:6px;">Key Comparison Takeaways</h4>
+    <ul style="margin:0; padding-left:18px; font-size:0.84rem; color:var(--ink-2); line-height:1.65;">
+        <li><strong style="color:var(--ink);">Footfall Volume:</strong> {% if dest1.Total_Visitors_2024 >= dest2.Total_Visitors_2024 %}{{ dest1.Destination }}{% else %}{{ dest2.Destination }}{% endif %} recorded higher total visits in 2024.</li>
+        <li><strong style="color:var(--ink);">3-Year Trajectory:</strong> {% if dest1.Growth_2022_2024 >= dest2.Growth_2022_2024 %}{{ dest1.Destination }}{% else %}{{ dest2.Destination }}{% endif %} posted stronger growth between 2022 and 2024.</li>
+        <li><strong style="color:var(--ink);">Supply Gap Position:</strong> {% if dest1.Overall_Gap_Score >= dest2.Overall_Gap_Score %}{{ dest1.Destination }}{% else %}{{ dest2.Destination }}{% endif %} shows a higher cluster-relative infrastructure deficit score.</li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById("comparisonChart");
+        if (ctx) {
+            new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: ["Hotels", "Resorts", "Homestays", "Restaurants", "Attractions"],
+                    datasets: [
+                        {
+                            label: "{{ dest1.Destination }}",
+                            data: [{{ dest1.Hotels }}, {{ dest1.Resorts }}, {{ dest1.Homestays_Vacation_Rentals }}, {{ dest1.Restaurants }}, {{ dest1.Attraction_Count }}],
+                            backgroundColor: "#154734",
+                            borderRadius: 5
+                        },
+                        {
+                            label: "{{ dest2.Destination }}",
+                            data: [{{ dest2.Hotels }}, {{ dest2.Resorts }}, {{ dest2.Homestays_Vacation_Rentals }}, {{ dest2.Restaurants }}, {{ dest2.Attraction_Count }}],
+                            backgroundColor: "#b8922a",
+                            borderRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { grid: { color: "#eceae2" }, title: { display: true, text: "Recorded Units" } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { position: "top", labels: { font: { family: "Plus Jakarta Sans", size: 11 }, boxWidth: 11 } }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

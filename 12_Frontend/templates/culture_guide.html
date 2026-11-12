@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% set active_page = 'culture_guide' %}
+
+{% block content %}
+<div class="page-header">
+    <span class="page-eyebrow">Cultural Reference</span>
+    <h1 class="page-title">Kerala Culture, Arts & Heritage Guide</h1>
+    <p class="page-lead">
+        Classical performing arts, temple festivals, backwater craftsmanship, and Malabar culinary traditions across Kerala's 14 districts.
+    </p>
+</div>
+
+<!-- INTERACTIVE CATEGORY PILLS -->
+<div class="landscape-pills" style="margin-bottom:1.35rem; gap:7px;">
+    <button type="button" class="landscape-pill active" onclick="filterCulture('all', this)" style="padding:6px 14px; font-size:0.79rem;">All Heritage</button>
+    <button type="button" class="landscape-pill" onclick="filterCulture('arts', this)" style="padding:6px 14px; font-size:0.79rem;">Classical & Folk Arts</button>
+    <button type="button" class="landscape-pill" onclick="filterCulture('festivals', this)" style="padding:6px 14px; font-size:0.79rem;">Festivals & Boat Races</button>
+    <button type="button" class="landscape-pill" onclick="filterCulture('culinary', this)" style="padding:6px 14px; font-size:0.79rem;">Culinary & Spice Route</button>
+    <button type="button" class="landscape-pill" onclick="filterCulture('wellness', this)" style="padding:6px 14px; font-size:0.79rem;">Backwaters & Ayurveda</button>
+</div>
+
+<!-- CULTURE CARDS GRID -->
+<div class="grid-3" id="culture-cards-grid" style="margin-bottom:1.75rem;">
+    <article class="media-card culture-item" data-cat="arts">
+        <div class="media-card-img-wrap" style="height:172px;">
+            <img src="/static/images/culture/kathakali.jpg" alt="Kathakali Classical Dance-Drama">
+            <span class="media-card-tag">Classical Art</span>
+        </div>
+        <div class="media-card-body">
+            <h3 style="color:var(--ink); font-size:1.06rem; font-weight:700; margin-bottom:4px;">Kathakali Dance-Drama</h3>
+            <p style="font-size:0.74rem; color:var(--ink-3); margin-bottom:9px;">Fort Kochi, Thrissur &amp; Kollam &middot; Year-round evening performances</p>
+            <p style="font-size:0.82rem; color:var(--ink-2); line-height:1.5; margin-bottom:14px;">
+                A 400-year-old classical dance-drama celebrated for codified hand mudras, natural-pigment facial makeup, and evening stage storytelling.
+            </p>
+            <a href="/destinations?highlight=Kochi%20City" class="btn-outline" style="margin-top:auto; font-size:0.78rem;">Explore Kochi Hub &#8594;</a>
+        </div>
+    </article>
+
+    <article class="media-card culture-item" data-cat="arts">
+        <div class="media-card-img-wrap" style="height:172px;">
+            <img src="/static/images/culture/theyyam.jpg" alt="Theyyam Ritual Folk Art North Malabar">
+            <span class="media-card-tag">Sacred Folk Ritual</span>
+        </div>
+        <div class="media-card-body">
+            <h3 style="color:var(--ink); font-size:1.06rem; font-weight:700; margin-bottom:4px;">Theyyam of North Malabar</h3>
+            <p style="font-size:0.74rem; color:var(--ink-3); margin-bottom:9px;">Parassinikkadavu, Kannur &amp; Bekal &middot; Peak: Nov – May</p>
+            <p style="font-size:0.82rem; color:var(--ink-2); line-height:1.5; margin-bottom:14px;">
+                Ancient ritual worship where performers in towering crimson headgear and intricate body paint enact ancestral legends in village groves (Kavus).
+            </p>
+            <a href="/destinations?highlight=Parassinikkadavu" class="btn-outline" style="margin-top:auto; font-size:0.78rem;">Explore Parassinikkadavu &#8594;</a>
+        </div>
+    </article>
+
+    <article class="media-card culture-item" data-cat="festivals">
+        <div class="media-card-img-wrap" style="height:172px;">
+            <img src="/static/images/culture/vallam_kali.jpg" alt="Alappuzha Vallam Kali Snake Boat Race">
+            <span class="media-card-tag">Water Regatta</span>
+        </div>
+        <div class="media-card-body">
+            <h3 style="color:var(--ink); font-size:1.06rem; font-weight:700; margin-bottom:4px;">Vallam Kali (Snake Boat Races)</h3>
+            <p style="font-size:0.74rem; color:var(--ink-3); margin-bottom:9px;">Alappuzha &amp; Kumarakom &middot; Peak: Aug – Sep (Onam)</p>
+            <p style="font-size:0.82rem; color:var(--ink-2); line-height:1.5; margin-bottom:14px;">
+                Over 100 oarsmen row 120-foot Chundan Vallams in unison to rhythmic Vanchipattu boat songs on Punnamada Lake during the annual regatta season.
+            </p>
+            <a href="/destinations?highlight=Alappuzha" class="btn-outline" style="margin-top:auto; font-size:0.78rem;">Explore Alappuzha &#8594;</a>
+        </div>
+    </article>
+
+    <article class="media-card culture-item" data-cat="festivals">
+        <div class="media-card-img-wrap" style="height:172px;">
+            <img src="/static/images/culture/temple_festival.jpg" alt="Kerala Temple Festival Thrissur Pooram">
+            <span class="media-card-tag">Temple Pageantry</span>
+        </div>
+        <div class="media-card-body">
+            <h3 style="color:var(--ink); font-size:1.06rem; font-weight:700; margin-bottom:4px;">Temple Festivals &amp; Panchavadyam</h3>
+            <p style="font-size:0.74rem; color:var(--ink-3); margin-bottom:9px;">Guruvayur, Thrissur &amp; Trivandrum &middot; Peak: Dec – Apr</p>
+            <p style="font-size:0.82rem; color:var(--ink-2); line-height:1.5; margin-bottom:14px;">
+                Traditional Pooram and Utsavam processions combining brass oil lamps (Nilavilakku), ceremonial parasols, and classical percussion ensembles.
+            </p>
+            <a href="/destinations?highlight=Guruvayur" class="btn-outline" style="margin-top:auto; font-size:0.78rem;">Explore Guruvayur &#8594;</a>
+        </div>
+    </article>
+
+    <article class="media-card culture-item" data-cat="culinary">
+        <div class="media-card-img-wrap" style="height:172px;">
+            <img src="/static/images/culture/malabar_food.jpg" alt="Malabar Gastronomy">
+            <span class="media-card-tag">Culinary Legacy</span>
+        </div>
+        <div class="media-card-body">
+            <h3 style="color:var(--ink); font-size:1.06rem; font-weight:700; margin-bottom:4px;">Malabar Gastronomy &amp; Spice Route</h3>
+            <p style="font-size:0.74rem; color:var(--ink-3); margin-bottom:9px;">Kozhikode, Thalassery &amp; Thekkady &middot; Year-round</p>
+            <p style="font-size:0.82rem; color:var(--ink-2); line-height:1.5; margin-bottom:14px;">
+                From Kozhikode's slow-cooked Malabar biryani and halwa to Idukki's cardamom estates and traditional Sadya meals served on plantain leaves.
+            </p>
+            <a href="/destinations?highlight=Kozhikode%20City" class="btn-outline" style="margin-top:auto; font-size:0.78rem;">Explore Kozhikode &#8594;</a>
+        </div>
+    </article>
+
+    <article class="media-card culture-item" data-cat="wellness">
+        <div class="media-card-img-wrap" style="height:172px;">
+            <img src="/static/images/culture/ayurveda_kettuvallam.jpg" alt="Kerala Kettuvallam Houseboat">
+            <span class="media-card-tag">Craft & Wellness</span>
+        </div>
+        <div class="media-card-body">
+            <h3 style="color:var(--ink); font-size:1.06rem; font-weight:700; margin-bottom:4px;">Kettuvallam Craft &amp; Ayurveda</h3>
+            <p style="font-size:0.74rem; color:var(--ink-3); margin-bottom:9px;">Kumarakom, Kovalam &amp; Varkala &middot; Peak: Jun – Mar</p>
+            <p style="font-size:0.82rem; color:var(--ink-2); line-height:1.5; margin-bottom:14px;">
+                Traditional timber houseboats bound with coconut coir rope without iron nails, alongside monsoon Panchakarma wellness retreats.
+            </p>
+            <a href="/destinations?highlight=Kumarakom" class="btn-outline" style="margin-top:auto; font-size:0.78rem;">Explore Kumarakom &#8594;</a>
+        </div>
+    </article>
+</div>
+
+<!-- SEASONAL CULTURAL TOURISM CALENDAR -->
+<div class="panel">
+    <div class="panel-header">
+        <h3 class="panel-title">Seasonal Tourism &amp; Cultural Calendar</h3>
+        <span class="panel-meta">Three primary inflow windows</span>
+    </div>
+    <div class="grid-3">
+        <div style="background:var(--surface-sage); border:1px solid #d4dfd2; border-radius:10px; padding:14px;">
+            <span class="badge-emerald" style="margin-bottom:8px;">Oct – Mar &middot; Peak Season</span>
+            <h4 style="color:var(--ink); font-size:0.95rem; margin-bottom:5px;">Coastal &amp; Cultural Influx</h4>
+            <p style="font-size:0.8rem; color:var(--ink-2); line-height:1.48;">
+                Cool dry weather across Varkala and Kovalam beaches, Munnar and Vagamon hill retreats, North Malabar Theyyam shrines, and Fort Kochi art festivals.
+            </p>
+        </div>
+        <div style="background:var(--gold-soft); border:1px solid #e6daaf; border-radius:10px; padding:14px;">
+            <span class="badge-amber" style="margin-bottom:8px;">Apr – May &middot; Summer Escape</span>
+            <h4 style="color:var(--ink); font-size:0.95rem; margin-bottom:5px;">Highland Tea &amp; Mist Retreats</h4>
+            <p style="font-size:0.8rem; color:var(--ink-2); line-height:1.48;">
+                Domestic travelers shift to cooler high-altitude estates and grasslands including Munnar, Wayanad, Nelliyampathy, Ponmudi, and Ranipuram.
+            </p>
+        </div>
+        <div style="background:var(--blue-soft); border:1px solid #cad8f7; border-radius:10px; padding:14px;">
+            <span class="badge-blue" style="margin-bottom:8px;">Jun – Sep &middot; Karkidakam &amp; Onam</span>
+            <h4 style="color:var(--ink); font-size:0.95rem; margin-bottom:5px;">Monsoon Wellness &amp; Boat Races</h4>
+            <p style="font-size:0.8rem; color:var(--ink-2); line-height:1.48;">
+                Ayurvedic monsoon treatments and peak waterfall flows at Athirappilly and Palaruvi, culminating in late-summer Onam festivities and boat regattas.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function filterCulture(category, btnEl) {
+    document.querySelectorAll(".landscape-pill").forEach(el => el.classList.remove("active"));
+    btnEl.classList.add("active");
+
+    document.querySelectorAll(".culture-item").forEach(card => {
+        const c = card.getAttribute("data-cat");
+        card.style.display = (category === "all" || c === category) ? "flex" : "none";
+    });
+}
+</script>
+{% endblock %}

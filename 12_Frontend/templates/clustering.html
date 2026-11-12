@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{% set active_page = 'clustering' %}
+
+{% block content %}
+<div class="page-header">
+    <span class="page-eyebrow">Unsupervised Machine Learning</span>
+    <h1 class="page-title">K-Means Segmentation &amp; Cluster Evaluation</h1>
+    <p class="page-lead">
+        K-Means clustering across 25 Kerala destinations using 8 continuous hospitality supply, satisfaction rating, and airport proximity features.
+    </p>
+</div>
+
+<!-- MODEL METRICS ROW -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="kpi-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        </div>
+        <div class="kpi-text">
+            <p class="kpi-label">Clusters (k)</p>
+            <h3 class="kpi-value">3</h3>
+            <p class="kpi-subtext">Elbow &amp; silhouette validated</p>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </div>
+        <div class="kpi-text">
+            <p class="kpi-label">StandardScaler + K-Means</p>
+            <h3 class="kpi-value">0.3899</h3>
+            <p class="kpi-subtext">Silhouette Score &middot; Primary model</p>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="kpi-text">
+            <p class="kpi-label">RobustScaler + K-Means</p>
+            <h3 class="kpi-value">0.5804</h3>
+            <p class="kpi-subtext">Silhouette Score &middot; Outlier check</p>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="kpi-text">
+            <p class="kpi-label">RobustScaler + PCA + K-Means</p>
+            <h3 class="kpi-value">0.6799</h3>
+            <p class="kpi-subtext">Silhouette Score &middot; 2 PCA components</p>
+        </div>
+    </div>
+</div>
+
+<!-- 3 CLUSTER PROFILE CARDS -->
+<div class="grid-3" style="margin-bottom:1.5rem;">
+    <div class="panel" style="border-top:3px solid var(--forest);">
+        <span class="badge-emerald" style="margin-bottom:8px;">Cluster 0 &middot; 3 Hubs</span>
+        <h3 style="color:var(--ink); margin-bottom:6px; font-size:1.06rem;">Urban Tourism &amp; Commercial Hubs</h3>
+        <p style="font-size:0.81rem; color:var(--ink-2); line-height:1.5; margin-bottom:12px;">
+            Metropolitan corridors characterized by dense hotel inventory, broad restaurant supply, and immediate international airport access.
+        </p>
+        <div style="background:var(--surface-muted); border:1px solid var(--border); border-radius:8px; padding:9px 11px; font-size:0.76rem; color:var(--ink-2);">
+            <strong style="color:var(--ink);">Members:</strong> Kochi City, Kozhikode City, Thiruvananthapuram City
+        </div>
+    </div>
+
+    <div class="panel" style="border-top:3px solid #3b7a5e;">
+        <span class="badge-blue" style="margin-bottom:8px;">Cluster 1 &middot; 14 Hubs</span>
+        <h3 style="color:var(--ink); margin-bottom:6px; font-size:1.06rem;">Developing &amp; Nature Destinations</h3>
+        <p style="font-size:0.81rem; color:var(--ink-2); line-height:1.5; margin-bottom:12px;">
+            Emerging nature sanctuaries, waterfalls, and coastal towns with modest commercial supply and pronounced stay or dining gaps.
+        </p>
+        <div style="background:var(--surface-muted); border:1px solid var(--border); border-radius:8px; padding:9px 11px; font-size:0.76rem; color:var(--ink-2);">
+            <strong style="color:var(--ink);">Members:</strong> Athirappilly, Bekal, Guruvayur, Konni, Malampuzha, Ponmudi, Silent Valley, Ranipuram
+        </div>
+    </div>
+
+    <div class="panel" style="border-top:3px solid var(--gold);">
+        <span class="badge-amber" style="margin-bottom:8px;">Cluster 2 &middot; 8 Hubs</span>
+        <h3 style="color:var(--ink); margin-bottom:6px; font-size:1.06rem;">Established Leisure &amp; Resorts</h3>
+        <p style="font-size:0.81rem; color:var(--ink-2); line-height:1.5; margin-bottom:12px;">
+            Recognized leisure destinations with high resort density, elevated attraction counts, and strong guest review averages.
+        </p>
+        <div style="background:var(--surface-muted); border:1px solid var(--border); border-radius:8px; padding:9px 11px; font-size:0.76rem; color:var(--ink-2);">
+            <strong style="color:var(--ink);">Members:</strong> Munnar, Wayanad, Vagamon, Thekkady, Alappuzha, Kumarakom, Varkala, Kovalam
+        </div>
+    </div>
+</div>
+
+<!-- CLUSTER PROFILES COMPARISON CHART -->
+<div class="split-60-40" style="margin-bottom:1.5rem;">
+    <div class="panel">
+        <div class="panel-header">
+            <h3 class="panel-title">Cluster Profiles (Mean Infrastructure Count)</h3>
+            <span class="panel-meta">Average per destination</span>
+        </div>
+        <div class="chart-stage">
+            <canvas id="clusterProfilesChart"></canvas>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <h3 class="panel-title">Hotels vs. Resorts Distribution</h3>
+            <span class="panel-meta">Cluster scatter</span>
+        </div>
+        <div class="chart-stage">
+            <canvas id="hotelsResortsScatter"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- MODEL BENCHMARKING TABLE -->
+<div class="table-container">
+    <div class="table-container-header">
+        <h3 class="panel-title">Model Pipeline Comparison</h3>
+        <span class="panel-meta">Saved offline training results</span>
+    </div>
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Model Pipeline</th>
+                    <th>Evaluation Space</th>
+                    <th class="num">Silhouette Score</th>
+                    <th>Decision &amp; Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>StandardScaler + K-Means</strong></td>
+                    <td style="color:var(--ink-2);">Original 8 features</td>
+                    <td class="num"><span class="badge-emerald">0.3899</span></td>
+                    <td><strong>Selected</strong> &mdash; Primary tourism segmentation &amp; business gap baseline</td>
+                </tr>
+                <tr>
+                    <td><strong>RobustScaler + K-Means</strong></td>
+                    <td style="color:var(--ink-2);">Original 8 features</td>
+                    <td class="num">0.5804</td>
+                    <td>Retained for urban outlier sensitivity check</td>
+                </tr>
+                <tr>
+                    <td><strong>RobustScaler + PCA + K-Means</strong></td>
+                    <td style="color:var(--ink-2);">2 PCA components</td>
+                    <td class="num">0.6799</td>
+                    <td>Retained for 2D principal-component projection</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const cpCtx = document.getElementById("clusterProfilesChart");
+        if (cpCtx) {
+            new Chart(cpCtx, {
+                type: "bar",
+                data: {
+                    labels: ["Hotels", "Resorts", "Homestays", "Dining"],
+                    datasets: [
+                        { label: "Cluster 0 (Urban Hubs)", data: [346.0, 53.7, 490.0, 912.7], backgroundColor: "#154734" },
+                        { label: "Cluster 1 (Developing / Nature)", data: [39.2, 22.9, 88.0, 53.8], backgroundColor: "#3b7a5e" },
+                        { label: "Cluster 2 (Established Leisure)", data: [143.8, 164.3, 401.3, 192.3], backgroundColor: "#b8922a" }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { grid: { color: "#eceae2" } }
+                    },
+                    plugins: {
+                        legend: { position: "top", labels: { font: { family: "Plus Jakarta Sans", size: 11 }, boxWidth: 11 } }
+                    }
+                }
+            });
+        }
+
+        const hrCtx = document.getElementById("hotelsResortsScatter");
+        if (hrCtx) {
+            new Chart(hrCtx, {
+                type: "bubble",
+                data: {
+                    datasets: [
+                        {
+                            label: "Urban Hubs",
+                            data: [
+                                { x: 480, y: 65, r: 10, label: "Kochi City" },
+                                { x: 246, y: 42, r: 8, label: "Kozhikode City" },
+                                { x: 312, y: 54, r: 9, label: "Thiruvananthapuram City" }
+                            ],
+                            backgroundColor: "rgba(21, 71, 52, 0.85)"
+                        },
+                        {
+                            label: "Established Leisure",
+                            data: [
+                                { x: 245, y: 161, r: 9, label: "Munnar" },
+                                { x: 184, y: 267, r: 11, label: "Wayanad" },
+                                { x: 86, y: 142, r: 7, label: "Vagamon" },
+                                { x: 112, y: 154, r: 8, label: "Thekkady" },
+                                { x: 142, y: 118, r: 8, label: "Alappuzha" },
+                                { x: 127, y: 74, r: 7, label: "Kumarakom" },
+                                { x: 116, y: 214, r: 9, label: "Varkala" },
+                                { x: 138, y: 184, r: 9, label: "Kovalam" }
+                            ],
+                            backgroundColor: "rgba(184, 146, 42, 0.85)"
+                        },
+                        {
+                            label: "Developing / Nature",
+                            data: [
+                                { x: 154, y: 0, r: 7, label: "Guruvayur" },
+                                { x: 42, y: 26, r: 6, label: "Athirappilly" },
+                                { x: 38, y: 14, r: 5, label: "Bekal" },
+                                { x: 36, y: 12, r: 5, label: "Malampuzha" },
+                                { x: 28, y: 14, r: 5, label: "Parassinikkadavu" },
+                                { x: 20, y: 0, r: 4, label: "Ponmudi" },
+                                { x: 22, y: 16, r: 5, label: "Thenmala" }
+                            ],
+                            backgroundColor: "rgba(59, 122, 94, 0.82)"
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: "Hotels" }, grid: { color: "#eceae2" } },
+                        y: { title: { display: true, text: "Resorts" }, grid: { color: "#eceae2" } }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (ctx) {
+                                    const raw = ctx.raw;
+                                    return `${raw.label}: ${raw.x} Hotels, ${raw.y} Resorts`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

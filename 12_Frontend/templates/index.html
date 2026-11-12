@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+{% set active_page = 'dashboard' %}
+
+{% block top_bar %}
+<!-- HERO BANNER -->
+<section class="hero-banner">
+    <div class="hero-left">
+        <button type="button" class="hero-mobile-btn" onclick="toggleSidebar()" aria-label="Toggle navigation">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="hero-eyebrow">Kerala Tourism Analytics</span>
+        <h1 class="hero-title">Kerala Tourism Intelligence</h1>
+        <p class="hero-subtitle">
+            Footfall dynamics, seasonal search demand, and hospitality supply screening across 25 benchmark corridors.
+        </p>
+        <div class="hero-tag-pills">
+            <span class="hero-pill hero-pill-season">Peak Season: Oct – Mar</span>
+            <a href="/culture-guide" class="hero-pill hero-pill-culture">Kerala Culture Guide</a>
+            <a href="/about" class="hero-pill">Dataset: 2022–2024</a>
+        </div>
+    </div>
+
+    <div class="hero-search-container">
+        <form action="/destinations" method="GET" class="search-box">
+            <input type="text" name="search" id="hero-search-input" list="kerala-dest-options" class="search-input" placeholder="Search a destination (e.g. Munnar)..." />
+            <button type="submit" class="search-btn" aria-label="Search destinations">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+        </form>
+    </div>
+</section>
+
+<!-- HERITAGE FIELD NOTE BAR -->
+<div class="heritage-ticker-bar">
+    <span class="heritage-ticker-badge">Kerala Heritage</span>
+    <p id="heritage-ticker-text" class="heritage-ticker-text">
+        Vagamon's pine hills and rolling meadows host annual international paragliding gatherings in Idukki district.
+    </p>
+    <div class="ticker-nav-group">
+        <button type="button" class="ticker-nav-btn" onclick="prevTicker()" aria-label="Previous note">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button type="button" class="ticker-nav-btn" onclick="nextTicker()" aria-label="Next note">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- 4 KPI STATISTIC CARDS -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="kpi-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="kpi-text">
+            <p class="kpi-label">Signpost Hubs</p>
+            <h3 class="kpi-value">{{ kpis.total_destinations }}</h3>
+            <p class="kpi-subtext">Across 14 Kerala districts</p>
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="kpi-text">
+            <p class="kpi-label">Annual Arrivals</p>
+            <h3 class="kpi-value">{{ (kpis.total_footfall_2024 / 1000000) | round(1) }}M</h3>
+            <p class="kpi-subtext">2024 total &middot; {{ (kpis.total_footfall_2022 / 1000000) | round(1) }}M in 2022</p>
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01"/><path d="M9 12v.01"/><path d="M9 15v.01"/></svg>
+        </div>
+        <div class="kpi-text">
+            <p class="kpi-label">Commercial Supply</p>
+            <h3 class="kpi-value">{{ "{:,}".format(kpis.commercial_supply) }}</h3>
+            <p class="kpi-subtext">{{ kpis.total_hotels }} hotels &middot; {{ kpis.total_restaurants }} dining &middot; {{ kpis.total_homestays }} stays</p>
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        </div>
+        <div class="kpi-text">
+            <p class="kpi-label">3-Year Growth</p>
+            <h3 class="kpi-value">+{{ kpis.overall_growth | round(1) }}%</h3>
+            <p class="kpi-subtext">Net footfall change, 2022–2024</p>
+        </div>
+    </div>
+</div>
+
+<!-- 3-COLUMN CORE CORRIDOR -->
+<div class="corridor-grid">
+    <!-- COLUMN 1: KERALA SIGNPOST ROSTER -->
+    <div class="roster-card">
+        <div class="roster-header">
+            <h4>Destination Roster</h4>
+            <span>25 hubs</span>
+        </div>
+
+        <div class="landscape-pills">
+            <button type="button" class="landscape-pill active" onclick="filterRoster('All Destinations', this)">All</button>
+            <button type="button" class="landscape-pill" onclick="filterRoster('Hills', this)">Hills</button>
+            <button type="button" class="landscape-pill" onclick="filterRoster('Backwaters', this)">Backwaters</button>
+            <button type="button" class="landscape-pill" onclick="filterRoster('Coastal', this)">Coastal</button>
+            <button type="button" class="landscape-pill" onclick="filterRoster('Urban', this)">Urban</button>
+        </div>
+
+        <div class="roster-list">
+            {% for dest in destinations %}
+            <button type="button" class="roster-btn {% if dest.Destination == default_dest.Destination %}active{% endif %}"
+                    data-category="{{ dest.Landscape_Category }}"
+                    onclick="selectDestination('{{ dest.Destination }}', this)">
+                <span>{{ dest.Destination }}</span>
+                <span class="tag">{{ dest.District }}</span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- COLUMN 2: SIMPLE TOURISM TREND CHART -->
+    <div class="trend-card">
+        <div class="trend-header">
+            <h3>Search Interest &mdash; <span id="trend-dest-name">{{ default_dest.Destination }}</span></h3>
+            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                <a id="trend-deepdive-link" href="/google-trends?destination={{ default_dest.Destination }}" style="font-size:0.75rem; font-weight:600; color:var(--forest); text-decoration:none; white-space:nowrap;">Full Analysis &#8594;</a>
+                <select class="trend-select" id="trend-period-select" onchange="selectDestination(document.getElementById('trend-dest-name').innerText, null)">
+                    <option value="3y" selected>Last 3 Years</option>
+                    <option value="1y">Last 12 Months</option>
+                    <option value="all">Full Series</option>
+                </select>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="trendsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- COLUMN 3: DESTINATION SPOTLIGHT CARD -->
+    <div class="spotlight-card">
+        <div class="spotlight-img-wrap">
+            <img id="spotlight-img" class="spotlight-img" src="{{ default_dest.Photo_URL }}" alt="{{ default_dest.Destination }}" />
+            <div class="spotlight-overlay">
+                <h3 id="spotlight-title" class="spotlight-title">{{ default_dest.Destination }}</h3>
+                <p id="spotlight-loc" class="spotlight-loc">{{ default_dest.District }} District &middot; {{ default_dest.Tagline }}</p>
+            </div>
+        </div>
+        <div class="spotlight-body">
+            <span id="spotlight-cluster-pill" class="spotlight-cluster-pill">Cluster {{ default_dest.Cluster }} &middot; {{ default_dest.Cluster_Name }}</span>
+
+            <div class="score-box">
+                <div class="score-ring-wrap">
+                    <svg class="score-ring-svg" viewBox="0 0 48 48">
+                        <circle class="score-ring-bg" cx="24" cy="24" r="21"></circle>
+                        <circle id="spotlight-ring" class="score-ring-fill" cx="24" cy="24" r="21"
+                                stroke-dasharray="131.95"
+                                stroke-dashoffset="{{ (131.95 * (1 - (default_dest.Opportunity_Score / 100))) | round(2) }}"></circle>
+                    </svg>
+                    <span id="spotlight-score" class="score-ring-val">{{ default_dest.Opportunity_Score }}%</span>
+                </div>
+                <div>
+                    <p style="font-size:0.71rem; font-weight:700; color:var(--forest); margin-bottom:2px; text-transform:uppercase; letter-spacing:0.04em;">Opportunity Index</p>
+                    <p style="font-size:0.74rem; color:var(--ink-3); margin:0;">Relative infrastructure gap signal</p>
+                </div>
+            </div>
+
+            <ul class="spotlight-checklist">
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span id="spotlight-check1"><strong>Footfall (2024):</strong> {{ "{:,}".format(default_dest.Total_Visitors_2024) }} visits</span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span id="spotlight-check2"><strong>3-Year Growth:</strong> <span class="{% if default_dest.Growth_2022_2024 >= 0 %}growth-pos{% else %}growth-neg{% endif %}">{{ "%+.1f"|format(default_dest.Growth_2022_2024) }}%</span></span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span id="spotlight-check3"><strong>Suggested Venture:</strong> {{ default_dest.Primary_Concept }}</span>
+                </li>
+            </ul>
+
+            <a id="spotlight-explore-btn" href="/destinations?highlight={{ default_dest.Destination }}" class="spotlight-btn">
+                View Destination Dossier &#8594;
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- LOWER DASHBOARD ROW: TOP FOOTFALL & CLUSTER SUMMARY -->
+<div class="lower-grid">
+    <div class="panel" style="display:flex; flex-direction:column;">
+        <div class="panel-header">
+            <h3 class="panel-title">Top Destinations by 2024 Footfall</h3>
+            <a href="/destinations" style="font-size:0.8rem; color:var(--forest); text-decoration:none; font-weight:600;">View all 25 &#8594;</a>
+        </div>
+        <div class="table-scroll">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Destination</th>
+                        <th>District</th>
+                        <th class="num">2024 Visits</th>
+                        <th class="num">3-Yr Growth</th>
+                        <th>Suggested Venture</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for top in top_destinations %}
+                    <tr>
+                        <td><strong>{{ top.Destination }}</strong></td>
+                        <td style="color:var(--ink-2);">{{ top.District }}</td>
+                        <td class="num">{{ "{:,}".format(top.Total_Visitors_2024) }}</td>
+                        <td class="num {% if top.Growth_2022_2024 >= 0 %}growth-pos{% else %}growth-neg{% endif %}">
+                            {{ "%+.1f"|format(top.Growth_2022_2024) }}%
+                        </td>
+                        <td><span class="badge-neutral">{{ top.Primary_Concept }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel" style="display:flex; flex-direction:column;">
+        <div class="panel-header">
+            <h3 class="panel-title">K-Means Cluster Breakdown</h3>
+            <a href="/clustering" style="font-size:0.8rem; color:var(--forest); text-decoration:none; font-weight:600;">Model details &#8594;</a>
+        </div>
+        <div style="flex:1; position:relative; min-height:215px;">
+            <canvas id="clusterPieChart"></canvas>
+        </div>
+        <div class="grid-3" style="gap:8px; margin-top:12px; text-align:center; font-size:0.74rem;">
+            <div class="metric-tile">
+                <span>Cluster 0</span>
+                <strong style="color:var(--forest); font-size:0.82rem;">Urban (3)</strong>
+            </div>
+            <div class="metric-tile">
+                <span>Cluster 1</span>
+                <strong style="color:#3b7a5e; font-size:0.82rem;">Nature (14)</strong>
+            </div>
+            <div class="metric-tile">
+                <span>Cluster 2</span>
+                <strong style="color:var(--gold-ink); font-size:0.82rem;">Leisure (8)</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FEATURED DESTINATIONS GALLERY ROW -->
+<div>
+    <h2 class="section-heading">Featured Corridors</h2>
+    <div class="featured-grid">
+        {% for feat in featured_destinations %}
+        <article class="media-card">
+            <div class="media-card-img-wrap">
+                <img src="{{ feat.Photo_URL }}" alt="{{ feat.Destination }}" />
+                <span class="media-card-tag">{{ feat.Landscape_Category }}</span>
+            </div>
+            <div class="media-card-body">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px; gap:8px;">
+                    <div>
+                        <h4 style="font-size:1rem; font-weight:700; color:var(--ink);">{{ feat.Destination }}</h4>
+                        <span style="font-size:0.74rem; color:var(--ink-3);">{{ feat.District }}</span>
+                    </div>
+                    <span class="{% if feat.Growth_2022_2024 >= 0 %}badge-emerald{% else %}badge-rose{% endif %} tabular">{{ "%+.1f"|format(feat.Growth_2022_2024) }}%</span>
+                </div>
+                <p style="font-size:0.77rem; color:var(--ink-2); margin:2px 0 12px 0; line-height:1.42;">
+                    {{ feat.Tagline }}
+                </p>
+                <div class="media-card-footer">
+                    <span class="tabular" style="font-size:0.74rem; color:var(--ink-3);">Stays: <strong style="color:var(--ink);">{{ feat.Hotels + feat.Resorts + feat.Homestays_Vacation_Rentals }}</strong></span>
+                    <a href="/destinations?highlight={{ feat.Destination }}" class="btn-outline" style="padding:5px 11px; font-size:0.75rem;">Open Dossier</a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const initialDates = {{ initial_trends.dates | tojson }};
+        const initialScores = {{ initial_trends.scores | tojson }};
+        renderTrendsChart("{{ default_dest.Destination }}", initialDates, initialScores);
+
+        const clusterCtx = document.getElementById("clusterPieChart");
+        if (clusterCtx) {
+            new Chart(clusterCtx, {
+                type: "doughnut",
+                data: {
+                    labels: [
+                        "Cluster 0: Urban Hubs (3)",
+                        "Cluster 1: Developing & Nature (14)",
+                        "Cluster 2: Established Leisure (8)"
+                    ],
+                    datasets: [{
+                        data: [3, 14, 8],
+                        backgroundColor: ["#154734", "#3b7a5e", "#b8922a"],
+                        borderWidth: 2,
+                        borderColor: "#ffffff"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: "bottom",
+                            labels: {
+                                font: { family: "Plus Jakarta Sans", size: 11 },
+                                color: "#4a5750",
+                                boxWidth: 11,
+                                padding: 12
+                            }
+                        }
+                    },
+                    cutout: "64%"
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
