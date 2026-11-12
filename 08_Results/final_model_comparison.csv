@@ -1,0 +1,4 @@
+Model,Silhouette_Score,Davies_Bouldin_Index,Calinski_Harabasz_Index,Evaluation_Space
+StandardScaler + K-Means,0.3899,0.9875,15.3527,Original 8 features
+RobustScaler + K-Means,0.5804,0.6431,28.2081,Original 8 features
+RobustScaler + PCA + K-Means,0.6799,0.5692,45.811,2 PCA components

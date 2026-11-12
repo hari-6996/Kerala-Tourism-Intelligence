@@ -1,0 +1,4 @@
+Model,Purpose,Decision
+StandardScaler + K-Means,Main tourism segmentation model,Selected for business analysis
+RobustScaler + K-Means,Alternative clustering experiment,Retained for comparison
+RobustScaler + PCA + K-Means,Dimensionality reduction and visualization,Retained for comparison

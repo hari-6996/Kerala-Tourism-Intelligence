@@ -1,0 +1,4 @@
+Metric,StandardScaler,RobustScaler
+Silhouette Score,0.3899,0.5804
+Davies-Bouldin Index,0.9875,0.6431
+Calinski-Harabasz Index,15.3527,28.2081
