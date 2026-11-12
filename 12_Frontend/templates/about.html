@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% set active_page = 'about' %}
+
+{% block content %}
+<div class="page-header">
+    <span class="page-eyebrow">Project Documentation</span>
+    <h1 class="page-title">Kerala Tourism Destination Analysis &amp; Business Opportunity Identification</h1>
+    <p class="page-lead">
+        Using unsupervised K-Means clustering, infrastructure gap scoring, and visitor trends across 25 benchmark corridors in Kerala.
+    </p>
+</div>
+
+<div style="display:flex; flex-direction:column; gap:18px;">
+    <!-- SECTION 1: PROBLEM STATEMENT & OBJECTIVES -->
+    <div class="panel">
+        <h2 style="color:var(--ink); font-size:1.22rem; font-weight:700; margin-bottom:10px;">01. Problem Statement &amp; Research Objectives</h2>
+        <p style="color:var(--ink-2); font-size:0.9rem; line-height:1.65; margin-bottom:12px;">
+            Hospitality investment in Kerala concentrates heavily around well-known centers such as Munnar, Kochi, and Kovalam.
+            Meanwhile, developing nature and cultural hubs receive rising visitor interest without proportional local infrastructure.
+            This study compares recorded establishment supply within similar destination clusters to identify relative gaps.
+        </p>
+        <ul style="color:var(--ink-2); font-size:0.88rem; line-height:1.65; padding-left:20px; margin-bottom:16px;">
+            <li><strong style="color:var(--ink);">Mature-hub congestion:</strong> High property saturation coupled with seasonal strain in established destinations.</li>
+            <li><strong style="color:var(--ink);">Emerging-corridor gaps:</strong> Lower recorded homestay or restaurant counts in growing secondary hubs.</li>
+        </ul>
+
+        <div class="grid-2" style="gap:12px;">
+            <div style="background:var(--surface-muted); border:1px solid var(--border); border-radius:10px; padding:12px 14px;">
+                <strong style="color:var(--forest); font-size:0.84rem;">Multi-Source Dataset Synthesis</strong>
+                <p style="font-size:0.79rem; color:var(--ink-2); margin:4px 0 0 0;">Compiled commercial counts, customer ratings, 2022–2024 footfall, search interest, and connectivity across 25 hubs.</p>
+            </div>
+            <div style="background:var(--surface-muted); border:1px solid var(--border); border-radius:10px; padding:12px 14px;">
+                <strong style="color:var(--forest); font-size:0.84rem;">Unsupervised K-Means Segmentation</strong>
+                <p style="font-size:0.79rem; color:var(--ink-2); margin:4px 0 0 0;">Grouped destinations into 3 peer clusters using StandardScaler, RobustScaler, and PCA evaluation.</p>
+            </div>
+            <div style="background:var(--surface-muted); border:1px solid var(--border); border-radius:10px; padding:12px 14px;">
+                <strong style="color:var(--forest); font-size:0.84rem;">Cluster-Relative Gap Scoring</strong>
+                <p style="font-size:0.79rem; color:var(--ink-2); margin:4px 0 0 0;">Measured sector-wise differences against cluster peer averages alongside 3-year visitor trends.</p>
+            </div>
+            <div style="background:var(--surface-muted); border:1px solid var(--border); border-radius:10px; padding:12px 14px;">
+                <strong style="color:var(--forest); font-size:0.84rem;">Sensitivity &amp; ROI Calculator</strong>
+                <p style="font-size:0.79rem; color:var(--ink-2); margin:4px 0 0 0;">Interactive break-even and ROI estimator driven by user-supplied capital and operating inputs.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: DATASET ARCHITECTURE -->
+    <div class="panel">
+        <h2 style="color:var(--ink); font-size:1.22rem; font-weight:700; margin-bottom:12px;">02. Dataset Architecture &amp; Preprocessing</h2>
+        <div class="table-scroll" style="margin-bottom:14px;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Domain</th>
+                        <th>Source Scope</th>
+                        <th>Primary Variables</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Hospitality Supply</strong></td>
+                        <td style="color:var(--ink-2);">Verified directory &amp; public listings</td>
+                        <td>Hotels, Resorts, Homestays, Restaurants</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Public Ratings</strong></td>
+                        <td style="color:var(--ink-2);">Aggregated visitor reviews (1–5 scale)</td>
+                        <td>Sector mean ratings across accommodation &amp; dining</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Visitor Footfall</strong></td>
+                        <td style="color:var(--ink-2);">Kerala Tourism published statistics &amp; estimates</td>
+                        <td>Domestic, Foreign, and Total Visits (2022–2024)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Search Trends</strong></td>
+                        <td style="color:var(--ink-2);">Google Trends India (monthly index)</td>
+                        <td>Destination, stay, food, and activity interest scores</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transit Access</strong></td>
+                        <td style="color:var(--ink-2);">Highway &amp; transport distance tables</td>
+                        <td>Airport distance (km), railway stations, highway access</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="color:var(--ink-2); font-size:0.85rem; line-height:1.6;">
+            Preprocessing steps included normalizing typographic dashes across destination names, parsing string distances to numeric kilometers, and flagging estimated visitor figures separately from official records.
+        </p>
+    </div>
+
+    <!-- SECTION 3: ML METHODOLOGY -->
+    <div class="panel">
+        <h2 style="color:var(--ink); font-size:1.22rem; font-weight:700; margin-bottom:10px;">03. Unsupervised Clustering &amp; Validation</h2>
+        <p style="color:var(--ink-2); font-size:0.87rem; line-height:1.6; margin-bottom:14px;">
+            Models were trained on 8 numerical infrastructure, rating, and airport proximity features across all 25 destinations. Existing cluster assignments are loaded directly from saved model artifacts:
+        </p>
+        <div class="grid-3">
+            <div style="background:var(--surface-muted); border:1px solid var(--border); border-radius:10px; padding:13px;">
+                <strong style="color:var(--forest); font-size:0.84rem;">StandardScaler + K-Means (Selected)</strong>
+                <p class="tabular" style="font-size:0.78rem; color:var(--ink-2); margin:6px 0 0 0; line-height:1.55;">
+                    Silhouette: <strong>0.3899</strong><br>
+                    Davies-Bouldin: <strong>0.9875</strong><br>
+                    Calinski-Harabasz: <strong>15.35</strong>
+                </p>
+            </div>
+            <div style="background:var(--surface-muted); border:1px solid var(--border); border-radius:10px; padding:13px;">
+                <strong style="color:var(--ink); font-size:0.84rem;">RobustScaler + K-Means</strong>
+                <p class="tabular" style="font-size:0.78rem; color:var(--ink-2); margin:6px 0 0 0; line-height:1.55;">
+                    Silhouette: <strong>0.5804</strong><br>
+                    Davies-Bouldin: <strong>0.6431</strong><br>
+                    Calinski-Harabasz: <strong>28.21</strong>
+                </p>
+            </div>
+            <div style="background:var(--surface-muted); border:1px solid var(--border); border-radius:10px; padding:13px;">
+                <strong style="color:var(--ink); font-size:0.84rem;">RobustScaler + PCA + K-Means</strong>
+                <p class="tabular" style="font-size:0.78rem; color:var(--ink-2); margin:6px 0 0 0; line-height:1.55;">
+                    Silhouette: <strong>0.6799</strong><br>
+                    Davies-Bouldin: <strong>0.5692</strong><br>
+                    Calinski-Harabasz: <strong>45.81</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: FORMULATIONS & LIMITATIONS -->
+    <div class="panel">
+        <h2 style="color:var(--ink); font-size:1.22rem; font-weight:700; margin-bottom:10px;">04. Gap Formulas &amp; Scope Limitations</h2>
+        <div class="formula-block">
+Gap(i, sector) = Mean_Cluster(sector) - Count(i, sector)<br>
+Overall Gap Score(i) = 0.25 * (Hotel_Gap + Resort_Gap + Homestay_Gap + Restaurant_Gap)<br>
+Monthly Profit = Monthly Revenue - Monthly Expenses<br>
+Annual Profit = Monthly Profit * 12<br>
+Payback Period (Months) = Initial Investment / Monthly Profit<br>
+Annual ROI (%) = (Annual Profit / Initial Investment) * 100
+        </div>
+        <h3 style="color:var(--ink); font-size:0.96rem; font-weight:700; margin-bottom:6px;">Key Limitations &amp; Future Scope</h3>
+        <ul style="color:var(--ink-2); font-size:0.85rem; line-height:1.6; padding-left:18px;">
+            <li>Infrastructure gaps capture relative differences in recorded business counts and do not prove market demand.</li>
+            <li>Remote eco-tourism sanctuaries without automated counters rely on provisional estimates rather than audited totals.</li>
+            <li>Profitability simulations rely strictly on user-supplied capital and operating estimates.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

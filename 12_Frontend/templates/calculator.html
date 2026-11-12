@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+{% set active_page = 'calculator' %}
+
+{% block content %}
+<div class="page-header">
+    <span class="page-eyebrow">Financial Feasibility Tool</span>
+    <h1 class="page-title">Interactive Profitability Calculator</h1>
+    <p class="page-lead">
+        Estimate monthly operating cash flow, payback horizon, and annual ROI using your own investment and revenue assumptions across any of the 25 destinations.
+    </p>
+</div>
+
+<!-- PROJECTION DISCLAIMER -->
+<div class="disclaimer-box">
+    <strong>User-Provided Financial Inputs:</strong>
+    Default preset figures are illustrative starting values only, not verified market capital costs or revenue benchmarks.
+    Enter your own localized project estimates to evaluate sensitivity.
+</div>
+
+<!-- SIMULATOR INPUT FORM -->
+<div class="panel" style="margin-bottom:1.5rem;">
+    <form id="calcForm" onsubmit="event.preventDefault(); runCalculation();">
+        <div class="grid-2" style="margin-bottom:1.25rem;">
+            <div>
+                <label class="form-label" for="calcDestination">Destination</label>
+                <select id="calcDestination" onchange="onDestinationChange()" class="form-select">
+                    {% for dest in destinations %}
+                    <option value="{{ dest.Destination }}" {% if dest.Destination == default_dest_name %}selected{% endif %}>
+                        {{ dest.Destination }} ({{ dest.District }}) &middot; Cluster {{ dest.Cluster }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="form-label" for="calcBusinessType">Venture Category</label>
+                <select id="calcBusinessType" onchange="applyPreset()" class="form-select">
+                    <option value="Resort" {% if default_venture == 'Resort' %}selected{% endif %}>Resort</option>
+                    <option value="Hotel" {% if default_venture == 'Hotel' %}selected{% endif %}>Hotel</option>
+                    <option value="Homestay" {% if default_venture == 'Homestay' %}selected{% endif %}>Homestay / Villa</option>
+                    <option value="Restaurant" {% if default_venture == 'Restaurant' %}selected{% endif %}>Restaurant / Cafe</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- DESTINATION DOSSIER BANNER -->
+        <div class="context-banner">
+            <div style="flex:1; min-width:250px;">
+                <h4 id="contextDestTitle" style="color:var(--ink); font-size:1rem; font-weight:700; margin-bottom:2px;">
+                    {{ default_dest.Destination }} ({{ default_dest.District }} District)
+                </h4>
+                <span id="contextDestCluster" style="font-size:0.79rem; color:var(--ink-2);">
+                    {{ default_dest.Cluster_Name }} &middot; 2024 Footfall: <strong class="tabular">{{ "{:,}".format(default_dest.Total_Visitors_2024) }}</strong>
+                </span>
+                <p id="contextDestRationale" style="font-size:0.76rem; color:var(--ink-2); margin:6px 0 0 0; line-height:1.45;">
+                    {{ default_rec.rationale if default_rec else '' }}
+                </p>
+            </div>
+            <div style="text-align:right; max-width:300px;">
+                <span style="font-size:0.72rem; color:var(--ink-3); text-transform:uppercase; font-weight:600;">Tailored Venture Fit</span><br>
+                <strong id="contextDestRec" style="color:var(--forest); font-size:0.88rem;">{{ default_rec.primary_concept if default_rec else default_dest.Recommended_Business }}</strong><br>
+                <span id="contextDestSec" style="font-size:0.73rem; color:var(--ink-3);">Secondary: {{ default_rec.secondary_label if default_rec else '' }}</span> &middot;
+                <span id="contextDestGrowth" class="tabular" style="font-size:0.76rem; color:var(--ink-2);">({{ "%+.1f"|format(default_dest.Growth_2022_2024) }}% growth)</span>
+            </div>
+        </div>
+
+        <!-- FINANCIAL INPUTS -->
+        <div class="grid-3" style="margin-bottom:1.25rem;">
+            <div>
+                <label class="form-label" for="inputInvestment">Initial Investment (INR)</label>
+                <input type="number" id="inputInvestment" value="2500000" step="50000" min="50000" max="500000000" class="form-control num-input" />
+                <span id="fmtInvestment" class="form-hint">&#8377;25.00 L</span>
+            </div>
+            <div>
+                <label class="form-label" for="inputRevenue">Expected Monthly Revenue (INR)</label>
+                <input type="number" id="inputRevenue" value="160000" step="10000" min="1000" max="50000000" class="form-control num-input" />
+                <span id="fmtRevenue" class="form-hint">&#8377;1.60 L</span>
+            </div>
+            <div>
+                <label class="form-label" for="inputExpenses">Monthly Operating Expenses (INR)</label>
+                <input type="number" id="inputExpenses" value="75000" step="5000" min="1000" max="30000000" class="form-control num-input" />
+                <span id="fmtExpenses" class="form-hint">&#8377;75.0 K</span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width:100%; padding:11px;">
+            Calculate Financial Projections
+        </button>
+    </form>
+</div>
+
+<!-- RESULTS CARDS -->
+<div class="kpi-grid" style="margin-bottom:1.5rem;">
+    <div class="kpi-card">
+        <div class="kpi-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="kpi-text">
+            <p class="kpi-label">Monthly Net Profit</p>
+            <h3 id="resMonthlyProfit" class="kpi-value" style="color:var(--emerald);">&#8377;85.0 K</h3>
+            <p id="resMonthlyMargin" class="kpi-subtext">53.1% operating margin</p>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="kpi-text">
+            <p class="kpi-label">Annual Net Profit</p>
+            <h3 id="resAnnualProfit" class="kpi-value">&#8377;10.20 L</h3>
+            <p class="kpi-subtext">12-month projected total</p>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="kpi-text">
+            <p class="kpi-label">Payback Period</p>
+            <h3 id="resPaybackMonths" class="kpi-value">29.4 Mo</h3>
+            <p id="resPaybackYears" class="kpi-subtext">2.5 years to breakeven</p>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        </div>
+        <div class="kpi-text">
+            <p class="kpi-label">Annual ROI</p>
+            <h3 id="resAnnualROI" class="kpi-value" style="color:var(--emerald);">40.8%</h3>
+            <p class="kpi-subtext">Annual profit / investment</p>
+        </div>
+    </div>
+</div>
+
+<!-- 5-YEAR CASH FLOW & BREAKEVEN CHART -->
+<div class="panel">
+    <div class="panel-header">
+        <h3 class="panel-title">5-Year Cumulative Cash Position &amp; Breakeven Trajectory</h3>
+        <span class="panel-meta">Net position (INR)</span>
+    </div>
+    <div class="chart-stage-tall">
+        <canvas id="cashFlowChart"></canvas>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    let cashFlowChartInstance = null;
+
+    const PRESETS = {
+        "Resort": { inv: 10000000, rev: 550000, exp: 320000 },
+        "Hotel": { inv: 7500000, rev: 420000, exp: 250000 },
+        "Homestay": { inv: 2500000, rev: 160000, exp: 75000 },
+        "Restaurant": { inv: 3500000, rev: 300000, exp: 190000 }
+    };
+
+    function applyPreset() {
+        const type = document.getElementById("calcBusinessType").value;
+        const p = PRESETS[type] || PRESETS["Homestay"];
+        document.getElementById("inputInvestment").value = p.inv;
+        document.getElementById("inputRevenue").value = p.rev;
+        document.getElementById("inputExpenses").value = p.exp;
+        updateFormattedLabels();
+        runCalculation();
+    }
+
+    function updateFormattedLabels() {
+        const inv = parseFloat(document.getElementById("inputInvestment").value) || 0;
+        const rev = parseFloat(document.getElementById("inputRevenue").value) || 0;
+        const exp = parseFloat(document.getElementById("inputExpenses").value) || 0;
+
+        document.getElementById("fmtInvestment").innerText = formatINR(inv);
+        document.getElementById("fmtRevenue").innerText = formatINR(rev);
+        document.getElementById("fmtExpenses").innerText = formatINR(exp);
+    }
+
+    function formatINR(val) {
+        const absVal = Math.abs(val);
+        const sign = val < 0 ? "-" : "";
+        if (absVal >= 10000000) return `${sign}\u20B9${(absVal / 10000000).toFixed(2)} Cr`;
+        if (absVal >= 100000) return `${sign}\u20B9${(absVal / 100000).toFixed(2)} L`;
+        if (absVal >= 1000) return `${sign}\u20B9${(absVal / 1000).toFixed(1)} K`;
+        return `${sign}\u20B9${absVal.toLocaleString()}`;
+    }
+
+    async function onDestinationChange() {
+        const dest = document.getElementById("calcDestination").value;
+        try {
+            const res = await fetch(`/api/destination/${encodeURIComponent(dest)}`);
+            const d = await res.json();
+            const rec = d.Recommendation || {};
+            document.getElementById("contextDestTitle").innerText = `${d.Destination} (${d.District} District)`;
+            document.getElementById("contextDestCluster").innerHTML = `${d.Cluster_Name} &middot; 2024 Footfall: <strong class="tabular">${Number(d.Total_Visitors_2024).toLocaleString()}</strong>`;
+            document.getElementById("contextDestRec").innerText = rec.primary_concept || d.Primary_Concept || d.Recommended_Business;
+            document.getElementById("contextDestSec").innerText = rec.secondary_label ? `Secondary: ${rec.secondary_label}` : "";
+            document.getElementById("contextDestRationale").innerText = rec.rationale || "";
+            document.getElementById("contextDestGrowth").innerText = `(${d.Growth_2022_2024 >= 0 ? "+" : ""}${Number(d.Growth_2022_2024).toFixed(1)}% growth)`;
+            if (rec.primary_sector && PRESETS[rec.primary_sector]) {
+                document.getElementById("calcBusinessType").value = rec.primary_sector;
+                applyPreset();
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function runCalculation() {
+        updateFormattedLabels();
+        const inv = parseFloat(document.getElementById("inputInvestment").value) || 0;
+        const rev = parseFloat(document.getElementById("inputRevenue").value) || 0;
+        const exp = parseFloat(document.getElementById("inputExpenses").value) || 0;
+
+        const mProfit = rev - exp;
+        const aProfit = mProfit * 12;
+
+        document.getElementById("resMonthlyProfit").innerText = formatINR(mProfit);
+        document.getElementById("resMonthlyProfit").style.color = mProfit >= 0 ? "var(--emerald)" : "var(--rose)";
+        document.getElementById("resMonthlyMargin").innerText = rev > 0 ? `${((mProfit / rev) * 100).toFixed(1)}% operating margin` : "0% margin";
+
+        document.getElementById("resAnnualProfit").innerText = formatINR(aProfit);
+        document.getElementById("resAnnualProfit").style.color = aProfit >= 0 ? "var(--ink)" : "var(--rose)";
+
+        if (mProfit > 0 && inv > 0) {
+            const pMonths = inv / mProfit;
+            document.getElementById("resPaybackMonths").innerText = `${pMonths.toFixed(1)} Mo`;
+            document.getElementById("resPaybackYears").innerText = `${(pMonths / 12).toFixed(1)} years to breakeven`;
+            const roi = (aProfit / inv) * 100;
+            document.getElementById("resAnnualROI").innerText = `${roi.toFixed(1)}%`;
+            document.getElementById("resAnnualROI").style.color = roi > 0 ? "var(--emerald)" : "var(--rose)";
+        } else {
+            document.getElementById("resPaybackMonths").innerText = "N/A";
+            document.getElementById("resPaybackYears").innerText = "Zero or negative cash flow";
+            document.getElementById("resAnnualROI").innerText = "0.0%";
+            document.getElementById("resAnnualROI").style.color = "var(--rose)";
+        }
+
+        renderCashFlowChart(inv, aProfit);
+    }
+
+    function renderCashFlowChart(inv, aProfit) {
+        const ctx = document.getElementById("cashFlowChart");
+        if (!ctx) return;
+
+        if (cashFlowChartInstance) {
+            cashFlowChartInstance.destroy();
+        }
+
+        const years = ["Year 0 (Initial)", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5"];
+        let cumulative = -inv;
+        const cumData = [cumulative];
+        const annualData = [-inv];
+
+        for (let y = 1; y <= 5; y++) {
+            cumulative += aProfit;
+            cumData.push(cumulative);
+            annualData.push(aProfit);
+        }
+
+        cashFlowChartInstance = new Chart(ctx, {
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        type: "line",
+                        label: "Cumulative Cash Position",
+                        data: cumData,
+                        borderColor: "#154734",
+                        backgroundColor: "#154734",
+                        borderWidth: 2.5,
+                        pointBackgroundColor: "#154734",
+                        pointRadius: 5,
+                        tension: 0.2
+                    },
+                    {
+                        type: "bar",
+                        label: "Annual Net Cash Flow",
+                        data: annualData,
+                        backgroundColor: "rgba(184, 146, 42, 0.72)",
+                        borderRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { display: false } },
+                    y: {
+                        grid: { color: "#eceae2" },
+                        ticks: {
+                            callback: function (val) { return formatINR(val); }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { position: "top", labels: { font: { family: "Plus Jakarta Sans", size: 11 }, boxWidth: 11 } },
+                    tooltip: {
+                        callbacks: {
+                            label: function (ctx) { return `${ctx.dataset.label}: ${formatINR(ctx.parsed.y)}`; }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        applyPreset();
+    });
+</script>
+{% endblock %}
